@@ -70,6 +70,7 @@ class MeshtasticMQTT(object):
         self.names = {}
         self.filters = None
         self.callbacks = {}  # Dictionary to store message type callbacks
+        self.shutting_down = False
 
     def register_callback(self, message_type: str, callback: callable):
         """
@@ -178,6 +179,19 @@ class MeshtasticMQTT(object):
 
         # Keep-alive loop
         client.loop_forever()
+
+    def loop_forever(self):
+        self.client.loop_forever()
+
+    def loop_start(self):
+        self.client.loop_start()
+
+    def loop_stop(self):
+        self.client.loop_stop()
+    def disconnect(self):
+        self.shutting_down = True
+        self.client.disconnect()
+
 
     def decrypt_message_packet(self, mp):
         """
@@ -455,6 +469,8 @@ class MeshtasticMQTT(object):
     ):
         """Callback for when the client disconnects from the server."""
         print(f"Disconnected with result code: {rc}")
+        if self.shutting_down:
+            return
         while True:
             print("Attempting to reconnect...")
             try:
