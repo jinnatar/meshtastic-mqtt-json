@@ -7,6 +7,11 @@ import json
 import time
 
 try:
+    from loguru import logger
+except ImportError:
+    raise ImportError("missing the loguru module (pip install loguru)")
+
+try:
     from cryptography.hazmat.backends import default_backend
     from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 except ImportError:
@@ -98,7 +103,9 @@ class MeshtasticMQTT(object):
         """
         # Call registered callback if one exists
         if portnum_name in self.callbacks:
-            self.callbacks[portnum_name](json_packet)
+            callback = self.callbacks[portnum_name]
+            logger.debug(f"message -> {callback}")
+            callback(json_packet)
         else:
             # Default behavior - print to console
             print(f"{json.dumps(json_packet)}")
@@ -158,9 +165,10 @@ class MeshtasticMQTT(object):
 
         # Connect to the MQTT broker
         try:
+            logger.info(f"Connecting MQTT: {broker}:{port}")
             client.connect(broker, port, 60)
         except Exception as e:
-            print(f"Error connecting to MQTT broker: {e}")
+            logger.error(f"Error connecting to MQTT broker: {e}")
             self.event_mqtt_disconnect(client, "", 1, None)
 
         # Set the subscribe topic
@@ -226,6 +234,7 @@ class MeshtasticMQTT(object):
 
         if rc == 0:
             client.subscribe(self.subscribe_topic)
+            logger.info(f"Subscribed to: {self.subscribe_topic}")
         else:
             print(f"Failed to connect to MQTT broker: {rc}")
 
@@ -238,6 +247,7 @@ class MeshtasticMQTT(object):
         :param msg:      An instance of MQTTMessage
         """
 
+        logger.debug(f"rx: {msg.topic}")
         try:
             # Define the service envelope
             service_envelope = mqtt_pb2.ServiceEnvelope()
