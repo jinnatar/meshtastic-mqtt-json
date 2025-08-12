@@ -1,6 +1,44 @@
-[build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "meshtastic-mqtt-json"
+version = "2.0.0"
+description = "A lightweight Python library for parsing Meshtastic MQTT messages"
+readme = "README.md"
+license = "ISC"
+authors = [
+    { name = "acidvegas", email = "'acid.vegas@acid.vegas" }
+]
+classifiers=[
+    'Development Status :: 3 - Alpha',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: ISC License (ISCL)',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Topic :: Communications',
+]
 
-[tool.setuptools_scm]
-write_to = "src/meshtastic_mqtt/_version.py"
+
+
+requires-python = ">=3.10"
+dependencies = [
+    "cryptography>=45.0.6",
+    "meshtastic>=2.7.0",
+    "paho-mqtt>=2.1.0",
+    "protobuf>=6.31.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/acidvegas/meshtastic_mqtt_json"
+Source = "https://github.com/acidvegas/meshtastic_mqtt_json"
+Documentation = "https://github.com/acidvegas/meshtastic_mqtt_json#readme"
+Issues = "https://github.com/acidvegas/meshtastic_mqtt_json/issues"
+
+[project.scripts]
+meshtastic-mqtt-json = "meshtastic_mqtt_json.client:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
