@@ -119,6 +119,7 @@ class MeshtasticMQTT(object):
         username: str,
         password: str,
         key: str,
+        node: str | None = None,
     ):
         """
         Connect to the MQTT broker
@@ -172,7 +173,8 @@ class MeshtasticMQTT(object):
             self.event_mqtt_disconnect(client, "", 1, None)
 
         # Set the subscribe topic
-        self.subscribe_topic = f"{root}{channel}/#"
+        target = f"!{node}" if node else "#"
+        self.subscribe_topic = f"{root}{channel}/{target}"
 
         # Keep-alive loop
         client.loop_forever()
@@ -477,6 +479,11 @@ def main():
     parser.add_argument("--password", default="large4cats", help="MQTT password")
     parser.add_argument("--key", default="AQ==", help="Encryption key")
     parser.add_argument(
+        "--node",
+        default=None,
+        help="Instead of all senders, filter to only messages originated by specified node hex id",
+    )
+    parser.add_argument(
         "--filter",
         help="Filter message types (comma-separated). Example: NODEINFO,POSITION,TEXT_MESSAGE",
     )
@@ -495,6 +502,7 @@ def main():
         args.username,
         args.password,
         args.key,
+        args.node,
     )
 
 
